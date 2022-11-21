@@ -1,17 +1,25 @@
-// const { buildSchema } = require('graphql')
-import { query } from 'express';
 import { buildSchema } from 'graphql';
-import { GraphQLSchema } from 'graphql';
 const schema = buildSchema(`
     schema {
         query: Query
+        mutation: Mutation
     }
 
     type Query {
         # Retrieve Events at a specific Venue
-        findEventsAtVenue(venueId: ID!): Concert
-        search(query: String): [SearchResult]
+        #findEventsAtVenue(venueId: ID!): Concert
+        #search(query: String): [SearchResult]
         events: String!
+        venues: [Venue]!
+        concerts: [Concert!]
+    }
+    type Mutation{
+        createVenue(venueInput: VenueInput): Venue
+    }
+    input VenueInput{
+        name: String
+        address: String
+        maxOccupancy: Int
     }
     union SearchResult = Conference | Festival | Concert | Venue
     type Venue {
