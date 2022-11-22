@@ -23,7 +23,6 @@ const Concert = sequelize.define('Concerts', {
         allowNull: false,
     },
     venueId: {
-        unique: true,
         type: DataTypes.UUIDV4,
         allowNull: false,
     },

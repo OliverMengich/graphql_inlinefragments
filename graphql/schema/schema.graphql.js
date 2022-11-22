@@ -8,20 +8,39 @@ const schema = buildSchema(`
     type Query {
         # Retrieve Events at a specific Venue
         #findEventsAtVenue(venueId: ID!): Concert
-        #search(query: String): [SearchResult]
-        events: String!
-        venues: [Venue]!
-        concerts: [Concert!]
+        search(query: String): [SearchResult]
+        venues: [Venue!]!
+        concerts: [Concert!]!
+        festivals: [Festival]!
     }
     type Mutation{
-        createVenue(venueInput: VenueInput): Venue
+        createVenue(venueInput: VenueInput): Venue!
+        createConcerts(concertInput: ConcertInput): Concert!
+        createFestival(festivalInput: FestivalInput): Festival
+        createConference(conferenceInput: ConferenceInput): Conference
+    }
+    input FestivalInput{
+        name: String!
+        startsAt: String!
+        endsAt: String!
+        venueId: ID!
+        minAgeRestriction: Int
+        performers: [String]
     }
     input VenueInput{
         name: String
         address: String
         maxOccupancy: Int
     }
-    union SearchResult = Conference | Festival | Concert | Venue
+    input ConcertInput{
+        name: String!
+        startsAt: String!
+        endsAt: String!
+        venueId: ID!
+        minAgeRestriction: Int!
+        performingBand: String!
+    }
+    union SearchResult = Conference | Festival | Concert
     type Venue {
         id: ID!
         name: String
@@ -34,7 +53,7 @@ const schema = buildSchema(`
         name: String!
         startsAt: String
         endsAt: String
-        venue: Venue
+        venue: Venue!
         minAgeRestriction: Int
         performingBand: String
     }
@@ -51,11 +70,11 @@ const schema = buildSchema(`
     type Festival implements Event {
         id: ID!
         name: String!
-        startsAt: String
-        endsAt: String
-        venue: Venue
-        minAgeRestriction: Int
-        performers: [String]
+        startsAt: String!
+        endsAt: String!
+        venue: Venue!
+        minAgeRestriction: Int!
+        performers: [String!]!
     }
 
     type Conference implements Event {
@@ -63,18 +82,22 @@ const schema = buildSchema(`
         name: String!
         startsAt: String
         endsAt: String
-        venue: Venue
+        venue: Venue!
         minAgeRestriction: Int
         speakers: [String]
         workshops: [String]
     }
+    input ConferenceInput{
+        name: String!
+        startsAt: String
+        endsAt: String!
+        venueId: ID!
+        minAgeRestriction: Int!
+        speakers: [String!]!
+        workshops: [String!]!
+    }
     query {
         search(query: "Madison") {
-            ... on Venue {
-                id
-                name
-                address
-            }
 
             ... on Festival {
                 id
