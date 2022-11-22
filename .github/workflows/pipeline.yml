@@ -1,0 +1,12 @@
+name: Deploy Backend to Azure
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+      - name: Checkout main
+        run: echo "Hello, world!!"
