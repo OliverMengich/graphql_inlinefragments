@@ -46,6 +46,8 @@ const schema = buildSchema(`
         name: String
         address: String
         maxOccupancy: Int
+        createdAt: String,
+        updatedAt: String,
     }
 
     type Concert implements Event {

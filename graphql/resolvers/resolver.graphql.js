@@ -10,19 +10,42 @@ const helperFind =async (Model, query) => {
     });
     return concerts.map(concert => {
         return {
-            ...concert.toJSON(),
-            venue: (() => {
-                return Venue.findByPk(concert.venueId)
-                    .then(venue => { return venue.toJSON() })
-                    .then(res => {
-                        return {
-                            ...res
-                        }
-                    })
-            })
+            Concert: {
+                ...concert.toJSON(),
+                venue: (() => {
+                    return Venue.findByPk(concert.venueId)
+                        .then(venue => { return venue.toJSON() })
+                        .then(res => {
+                            return {
+                                ...res
+                            }
+                        })
+                })
+            },
         }
     })
 }
+// const helperFind =async (Model, query) => {
+//     const concerts = await Model.findAll({
+//         where: {
+//             venueId: query
+//         }
+//     });
+//     return concerts.map(concert => {
+//         return {
+//             ...concert.toJSON(),
+//             venue: (() => {
+//                 return Venue.findByPk(concert.venueId)
+//                     .then(venue => { return venue.toJSON() })
+//                     .then(res => {
+//                         return {
+//                             ...res
+//                         }
+//                     })
+//             })
+//         }
+//     })
+// }
 
 const resolver = {
     findEventsAtVenue: ({ venueId }) => {
@@ -49,7 +72,7 @@ const resolver = {
                 ...venue
             }
         }).catch(err => {
-            console.log(err);
+            throw err;
         })
     },
     venues: () => {
@@ -57,12 +80,15 @@ const resolver = {
         return Venue.findAll()
             .then(venues => {
                 return venues.map(venue => {
+                    console.log(venue.toJSON());
                     return {
-                        ...venue.toJSON()
+                        ...venue.toJSON(),
+                        createdAt: new Date(venue.createdAt).toISOString(),
+                        updatedAt: new Date(venue.updatedAt).toISOString()
                     }
                 })
             }).catch(err => {
-                console.log(err);
+                throw err;
             })
     },
     createConcerts: ({ concertInput }) => {
@@ -77,7 +103,7 @@ const resolver = {
                 ...concert,
             }
         }).catch(err => {
-            console.log(err);
+            throw err;
         })
     },
     concerts: () => {
@@ -99,7 +125,7 @@ const resolver = {
                     }
                 })
             }).catch(err => {
-                console.log(err);
+                throw err;
             })
     },
     createFestival: ({ festivalInput }) => {
@@ -129,7 +155,7 @@ const resolver = {
                 })
             }
         }).catch(err => {
-            console.log(err);
+            throw err;
         })
     },
     festivals: () => {
@@ -151,7 +177,8 @@ const resolver = {
                     }
                 })
             }).catch(err => {
-                console.log(err);
+                throw err;
+
             })
     },
     createConference: ({ conferenceInput }) => {
@@ -185,7 +212,7 @@ const resolver = {
                 workshops: conference.workshops.split(','),
             }
         }).catch(err => {
-            console.log(err);
+            throw err;
         });
     },
     conferences: () => {
@@ -209,49 +236,47 @@ const resolver = {
                     }
                 })
             }).catch(err => {
-                console.log(err);
+                throw err;
             })
     },
     search: async ({ query }) => {
         const concerts = await helperFind(Concert, query)
             .then(resp => {
-                return resp.map(Concert => {
-                    return {
-                        Concert,
-                    }
-                })
+                return resp;
+                // return resp.map(Concert => {
+                //     return {
+                //         ...{Concert: Concert},
+                //     }
+                // })
             }).catch(err => {
-                console.log(err);
+                throw err;
             })
-        const festivals = await helperFind(Festival, query)
-            .then(resp => {
-                return resp.map(Festival => {
-                    Festival.performers = Festival.performers.split(',');
-                    return {
-                        Festival,
-                    }
-                })
-            }).catch(err => {
-                console.log(err);
-            })
-        const conferences = await helperFind(Conference, query)
-            .then(resp => {
-                return resp.map(Conference => {
-                    Conference.speakers = Conference.speakers.split(',')
-                    Conference.workshops = Conference.workshops.split(',')
-                    return {
-                        Conference,
-                    }
-                })
-            }
-            ).catch(err => {
-                console.log(err);
-            })
-        return {
-            concerts,
-            festivals,
-            conferences
-        }
+        // const festivals = await helperFind(Festival, query)
+        //     .then(resp => {
+        //         return resp.map(Festival => {
+        //             Festival.performers = Festival.performers.split(',');
+        //             return {
+        //                ...{Festival: Festival},
+        //             }
+        //         })
+        //     }).catch(err => {
+        //         throw err;
+        //     })
+        // const conferences = await helperFind(Conference, query)
+        //     .then(resp => {
+        //         return resp.map(Conference => {
+        //             Conference.speakers = Conference.speakers.split(',')
+        //             Conference.workshops = Conference.workshops.split(',')
+        //             return {
+        //                 ...{Conference: Conference},
+                        
+        //             }
+        //         })
+        //     }
+        //     ).catch(err => {
+        //         throw err;
+        //     })
+        return {...concerts};
     }
 }
 export default resolver;

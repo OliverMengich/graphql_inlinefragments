@@ -8,7 +8,6 @@ import Conference from "./models/conference.model.js";
 import Festival from "./models/festival.model.js";
 import Venue from "./models/venue.model.js";
 
-Concert.afterUpdate(() => { console.log("Data updated"); });
 Concert.belongsTo(Venue, {
     foreignKey:'venueId'
 })
